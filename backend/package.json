@@ -5,13 +5,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "dev:development": "nodemon src/index.js --mode DEVELOPMENT",
+    "dev:production": "nodemon src/index.js --mode PRODUCTION"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "commander": "^10.0.1",
     "connect-mongo": "^5.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

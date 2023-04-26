@@ -1,4 +1,4 @@
-import 'dotenv/config.js';
+import './config/dotenv.js';
 import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
@@ -62,6 +62,7 @@ connectionMongoose()
 app.use('/', router);
 
 //PUERTO DEL SERVIDOR
-app.set("port", process.env.PORT || 8080);
+const port = process.env.APP_PORT || 8080;
+app.set("port", port);
 const server = app.listen(app.get("port"), () => console.log(`Server on port ${app.get("port")}`));
 
