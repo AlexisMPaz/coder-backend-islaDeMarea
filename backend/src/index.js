@@ -12,16 +12,16 @@ import { initializePassport } from './config/passport.js';
 import cors from 'cors';
 
 //CORS
-// const whiteList = ['http://localhost:3000']
-// const corsOptions = {
-//     origin: (origin, callback) => {
-//         if (whiteList.indexOf(origin) !== -1) {
-//             callback(null, true)
-//         } else {
-//             callback(new Error('Not allowed by Cors'))
-//         }
-//     }
-// }
+const whiteList = ['http://localhost:3000']
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (whiteList.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by Cors'))
+        }
+    }
+}
 
 //Iniciar Server
 const app = express()
@@ -29,7 +29,7 @@ const app = express()
 //MIDDLEWARES
 app.use(cookieParser(process.env.SIGNED_COOKIE))
 app.use(express.json())
-// app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
     store: MongoStore.create({
