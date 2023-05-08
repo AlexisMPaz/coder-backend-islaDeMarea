@@ -1,45 +1,45 @@
 import './config/dotenv.js';
 import express from 'express';
-import session from 'express-session';
-import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
 import { __dirname } from './path.js';
-import * as path from 'path';
-import  router  from './routes/index.routes.js';
+import router from './routes/index.routes.js';
 import passport from 'passport'
 import { initializePassport } from './config/passport.js';
 import cors from 'cors';
+import { Server } from "socket.io";
 
 //CORS
-const whiteList = ['http://localhost:3000']
+const whiteList = ["http://localhost:3000"];
 const corsOptions = {
     origin: (origin, callback) => {
         if (whiteList.indexOf(origin) !== -1) {
-            callback(null, true)
+            callback(null, true);
         } else {
-            callback(new Error('Not allowed by Cors'))
+            callback(new Error('Not allowed by CORS'));
         }
-    }
-}
+    },
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    methods: 'GET, POST, PUT, DELETE',
+    optionsSuccessStatus: 200,
+    preflightContinue: false,
+    maxAge: 3600,
+};
 
 //Iniciar Server
 const app = express()
 
 //MIDDLEWARES
-app.use(cookieParser(process.env.SIGNED_COOKIE))
+app.use(cookieParser(process.env.JWT_SECRET))
 app.use(express.json())
 app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
-    store: MongoStore.create({
-        mongoUrl: process.env.URLMONGODB,
-        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
-        ttl: 500
-    }),
-    secret: process.env.SESSION_SECRET,
-    resave: true,
-    saveUninitialized: true
+    secret: process.env.SESSION_SECRET, // Cambia esto a una cadena secreta aleatoria
+    resave: false,
+    saveUninitialized: false
 }));
 
 //Passport
@@ -66,3 +66,15 @@ const port = process.env.APP_PORT || 8080;
 app.set("port", port);
 const server = app.listen(app.get("port"), () => console.log(`Server on port ${app.get("port")}`));
 
+//Servidor Socket
+export const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        methods: 'GET, POST, PUT, DELETE',
+        optionsSuccessStatus: 200,
+        preflightContinue: false,
+        maxAge: 3600,
+    },
+});

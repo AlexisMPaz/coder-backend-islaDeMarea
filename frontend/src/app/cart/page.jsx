@@ -1,5 +1,7 @@
-export default function CartPage () {
+export default function CartPage() {
     return (
-        <h1>Esta es el cart</h1>     
+        <div className="container mainContainer">
+            <h1>Esto es el cart</h1>
+        </div>
     )
 }

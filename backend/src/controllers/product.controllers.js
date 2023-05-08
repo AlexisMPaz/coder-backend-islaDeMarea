@@ -18,7 +18,8 @@ export const getProducts = async (req, res) => {
         const prevLink = products.hasPrevPage ? `/api/products?category=${category}&limit=${limit}&sort=${sort}&page=${products.prevPage}` : null
         const nextLink = products.hasNextPage ? `/api/products?category=${category}&limit=${limit}&sort=${sort}&page=${products.nextPage}` : null
 
-        return res.status(200).json({
+        console.log(products)
+        return res.status(200).send({
             status: "success",
             payload: products.docs,
             totalPages: products.totalPages,

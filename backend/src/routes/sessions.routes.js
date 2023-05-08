@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { destroySession, getSession, registerUser, loginUser } from "../controllers/session.controllers.js";
+import { getSession, registerUser, loginUser, logoutUser } from "../controllers/session.controllers.js";
 
 export const routerSession = Router()
 
@@ -7,5 +7,5 @@ export const routerSession = Router()
 routerSession.post("/register", registerUser)
 routerSession.post("/login", loginUser)
 
-routerSession.get("/logout", destroySession);
+routerSession.get("/logout", logoutUser);
 routerSession.get("/current", getSession);

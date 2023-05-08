@@ -16,6 +16,11 @@ const cartSchema = new Schema({
       }
     ],
     default: []
+  },
+  total: {
+    type: Number,
+    required: true,
+    default: 0
   }
 });
 
