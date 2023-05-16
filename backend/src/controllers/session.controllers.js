@@ -1,8 +1,11 @@
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { comparePassword, createHash } from '../utils/bcrypt.js'
+import { comparePassword, createHash } from '../utils/bcrypt/bcrypt.js'
 import { createUser, findUserByEmail } from '../service/userService.js';
 import { createCart } from '../service/cartService.js';
+import CustomError from "../utils/customErrors/CustomError.js";
+import { EErrors } from "../utils/customErrors/enums.js";
+import { generateUserErrorInfo } from '../utils/customErrors/info.js';
 
 
 export const loginUser = async (req, res, next) => {
@@ -52,16 +55,23 @@ export const loginUser = async (req, res, next) => {
         })(req, res, next)
 
     } catch (error) {
-        res.status(500).send({
-            message: "Hubo un error con la sesión",
-            error: error.message
-        })
+        next(error)
     }
 }
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
     try {
-        const { first_name, last_name, email, age, password } = req.body
+        const { first_name, last_name, email, age, password } = req.body;
+
+        if (!first_name || !last_name || !email || !age || !password) {
+            CustomError.createError({
+                name: "Error de Registro",
+                message: "No se pudo registrar el usuario",
+                cause: generateUserErrorInfo([first_name, last_name, email, age, password]),
+                code: EErrors.MISSING_FIELDS_ERROR
+            })
+        }
+
         const userDB = await findUserByEmail(email)
         if (userDB) {
             res.status(401).send({
@@ -88,14 +98,11 @@ export const registerUser = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).send({
-            message: "Hubo un error en el servidor",
-            error: error.message
-        })
+        next(error)
     }
 }
 
-export const logoutUser = async (req, res) => {
+export const logoutUser = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
         if (!token) {
@@ -113,14 +120,11 @@ export const logoutUser = async (req, res) => {
             res.status(200).send({ message: 'Sesión cerrada exitosamente' });
         });
     } catch (error) {
-        res.status(500).send({
-            message: 'Hubo un error en el servidor',
-            error: error.message
-        });
+        next(error)
     }
 };
 
-export const getSession = async (req, res) => {
+export const getSession = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
         if (!token) {
@@ -137,9 +141,6 @@ export const getSession = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({
-            message: 'Hubo un error en el servidor',
-            error: error.message
-        });
+        next(error)
     }
 };

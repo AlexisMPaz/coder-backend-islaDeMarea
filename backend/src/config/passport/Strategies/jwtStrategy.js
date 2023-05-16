@@ -1,5 +1,5 @@
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { findUserById } from '../../service/userService.js';
+import { findUserById } from '../../../service/userService.js';
 
 const cookieExtractor = (req) => {
     const token = req.cookies ? req.cookies.jwt : null;

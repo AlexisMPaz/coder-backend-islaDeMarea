@@ -1,6 +1,9 @@
-import { findProductById, insertProducts, updateOneProduct, paginateProducts, deleteOneProduct } from "../service/productService.js";
+import { findProductById, createProduct, updateOneProduct, paginateProducts, deleteOneProduct } from "../service/productService.js";
+import CustomError from "../utils/customErrors/CustomError.js";
+import { generateProductErrorInfo } from "../utils/customErrors/info.js";
+import { EErrors } from "../utils/customErrors/enums.js";
 
-export const getProducts = async (req, res) => {
+export const getProducts = async (req, res, next) => {
     const { limit = 10, page = 1, sort = "", category = "" } = req.query;
 
     const filters = { stock: { $gt: 0 } };
@@ -18,7 +21,6 @@ export const getProducts = async (req, res) => {
         const prevLink = products.hasPrevPage ? `/api/products?category=${category}&limit=${limit}&sort=${sort}&page=${products.prevPage}` : null
         const nextLink = products.hasNextPage ? `/api/products?category=${category}&limit=${limit}&sort=${sort}&page=${products.nextPage}` : null
 
-        console.log(products)
         return res.status(200).send({
             status: "success",
             payload: products.docs,
@@ -32,11 +34,11 @@ export const getProducts = async (req, res) => {
             nextLink: nextLink
         })
     } catch (error) {
-        res.status(500).send({error: error.message})
+        next(error)
     }
 }
 
-export const getProduct = async (req, res) => {
+export const getProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
 
     try {
@@ -44,32 +46,36 @@ export const getProduct = async (req, res) => {
         return res.status(200).json(product)
 
     } catch (error) {
-        console.log()
-        res.status(500).send({
-          message: "Error al buscar el producto",
-          error: error.message
-        });
+        next(error)
     }
 }
 
-export const addProducts = async (req, res) => {
-    const info = req.body;
-
+export const postProduct = async (req, res, next) => {
+    const productInfo = req.body;
     try {
-        const products = await insertProducts(info);
-        res.status(200).send({
-            message: 'Productos agregados correctamente', 
-            products: products
-        });
+        const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
+
+        if (requiredFields.every((field) => productInfo[field])) {
+            const product = await createProduct(productInfo);
+            res.status(200).send({
+                message: 'Producto agregado correctamente',
+                product: product
+            });
+        } else {
+            CustomError.createError({
+                name: "Error creando el Producto",
+                message: "No se pudo crear el producto",
+                cause: generateProductErrorInfo(productInfo),
+                code: EErrors.MISSING_FIELDS_ERROR
+            })
+        }
 
     } catch (error) {
-        res.status(500).send({
-            error: error.message
-        });
+        next(error)
     }
 }
 
-export const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
     const info = req.body;
 
@@ -87,13 +93,11 @@ export const updateProduct = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).send({
-            error: error.message
-        });
+        next(error)
     }
 }
 
-export const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
 
     try {
@@ -110,8 +114,6 @@ export const deleteProduct = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).send({
-            error: error.message
-        });
+        next(error)
     }
 }

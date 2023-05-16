@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { passportError, roleValidation } from "../config/middlewares.js";
+import { passportError } from "../config/middlewares/passportError.js";
+import { roleValidation } from "../config/middlewares/roleValidation.js";
 import { postMessage, getMessages } from "../controllers/chat.controllers.js";
 
 export const routerChat = Router();

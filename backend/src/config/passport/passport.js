@@ -1,6 +1,6 @@
 import passport from 'passport';
-import { strategyJWT } from './Strategies/jwtStrategy.js'
-import { findUserById } from '../service/userService.js';
+import { strategyJWT } from './Strategies/jwtStrategy.js';
+import { findUserById } from '../../service/userService.js';
 
 export const initializePassport = () => {
     passport.use('jwt', strategyJWT)

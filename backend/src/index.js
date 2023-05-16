@@ -6,9 +6,10 @@ import session from 'express-session';
 import { __dirname } from './path.js';
 import router from './routes/index.routes.js';
 import passport from 'passport'
-import { initializePassport } from './config/passport.js';
+import { initializePassport } from './config/passport/passport.js';
 import cors from 'cors';
 import { Server } from "socket.io";
+import errorHandler from './config/middlewares/errorHandler.js';
 
 //CORS
 const whiteList = ["http://localhost:3000"];
@@ -37,7 +38,7 @@ app.use(express.json())
 app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
-    secret: process.env.SESSION_SECRET, // Cambia esto a una cadena secreta aleatoria
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
@@ -60,6 +61,9 @@ connectionMongoose()
 
 //ROUTES
 app.use('/', router);
+
+//Errors
+app.use(errorHandler);
 
 //PUERTO DEL SERVIDOR
 const port = process.env.APP_PORT || 8080;

@@ -1,12 +1,19 @@
 import cartModel from "../models/MongoDB/cartModel.js";
 import productModel from "../models/MongoDB/productModel.js";
+import CustomError from "../utils/customErrors/CustomError.js";
+import { EErrors } from "../utils/customErrors/enums.js";
 
 
 export const findCartById = async (id) => {
     try {
         return await cartModel.findById(id);
     } catch (error) {
-        throw new Error(error);
+        CustomError.createError({
+            name: "Error en la base de datos.",
+            message: "No se ha encontrado el carrito.",
+            cause: error.message,
+            code: EErrors.DATABASE_ERROR
+        })
     }
 }
 
@@ -16,7 +23,12 @@ export const createCart = async () => {
         await newCart.save()
         return newCart
     } catch (error) {
-        throw new Error(error);
+        CustomError.createError({
+            name: "Error en la base de datos.",
+            message: "No se ha podido crear el carrito.",
+            cause: error.message,
+            code: EErrors.DATABASE_ERROR
+        })
     }
 }
 
@@ -24,7 +36,12 @@ export const deleteCart = async (id) => {
     try {
         return await cartModel.findByIdAndDelete(id);
     } catch (error) {
-        throw new Error(error);
+        CustomError.createError({
+            name: "Error en la base de datos.",
+            message: "No se ha podido borrar el carrito.",
+            cause: error.message,
+            code: EErrors.DATABASE_ERROR
+        })
     }
 }
 
@@ -44,6 +61,11 @@ export const updateCart = async (id, info) => {
         return cart;
 
     } catch (error) {
-        throw new Error(error);
+        CustomError.createError({
+            name: "Error en la base de datos.",
+            message: "No se ha podido actualizar el carrito.",
+            cause: error.message,
+            code: EErrors.DATABASE_ERROR
+        })
     }
 }

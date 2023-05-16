@@ -1,7 +1,7 @@
 import { createNewMessage, findMessages } from "../service/messageService.js";
 import { io } from "../index.js";
 
-export const postMessage = async (req, res) => {
+export const postMessage = async (req, res, next) => {
     const { message } = req.body;
     const { first_name, email } = req.user;
     try {
@@ -17,15 +17,11 @@ export const postMessage = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error.message)
-        res.status(500).send({
-            message: "Hubo un error en el servidor",
-            error: error.message
-        })
+        next(error)
     }
 }
 
-export const getMessages = async (req, res) => {
+export const getMessages = async (req, res, next) => {
     try {
         const messages = await findMessages();
         console.log(messages)
@@ -35,9 +31,6 @@ export const getMessages = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).send({
-            message: "Hubo un error en el servidor",
-            error: error.message
-        })
+        next(error)
     }
 }
