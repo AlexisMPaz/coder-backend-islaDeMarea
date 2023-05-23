@@ -50,7 +50,7 @@ export const findProductById = async (id) => {
     } catch (error) {
         CustomError.createError({
             name: "Error en la base de datos.",
-            message: "No se encontró el producto.",
+            message: "No se pudo buscar el producto.",
             cause: error.message,
             code: EErrors.DATABASE_ERROR
         })

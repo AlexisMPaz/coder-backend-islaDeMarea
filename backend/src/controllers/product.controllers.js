@@ -6,6 +6,8 @@ import { EErrors } from "../utils/customErrors/enums.js";
 export const getProducts = async (req, res, next) => {
     const { limit = 10, page = 1, sort = "", category = "" } = req.query;
 
+    req.logger.http(`Petición llegó al controlador (getProducts).`);
+
     const filters = { stock: { $gt: 0 } };
     if (category) filters.category = category;
 
@@ -41,9 +43,18 @@ export const getProducts = async (req, res, next) => {
 export const getProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
 
+    req.logger.http(`Petición llegó al controlador (getProduct).`);
+
     try {
         const product = await findProductById(idProduct);
-        return res.status(200).json(product)
+
+        if(product) {
+            req.logger.debug(product)
+            return res.status(200).json(product)
+        }
+
+        req.logger.warning("No se encontro el producto")
+        return res.status(401).json({message: "No se encontro el producto"})
 
     } catch (error) {
         next(error)
@@ -52,6 +63,8 @@ export const getProduct = async (req, res, next) => {
 
 export const postProduct = async (req, res, next) => {
     const productInfo = req.body;
+
+    req.logger.http(`Petición llegó al controlador`);
     try {
         const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
 
@@ -71,6 +84,7 @@ export const postProduct = async (req, res, next) => {
         }
 
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 }
@@ -78,6 +92,8 @@ export const postProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
     const info = req.body;
+
+    req.logger.http(`Petición llegó al controlador (updateProduct).`);
 
     try {
         const product = await updateOneProduct(idProduct, info);
@@ -93,12 +109,15 @@ export const updateProduct = async (req, res, next) => {
         });
 
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 }
 
 export const deleteProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
+
+    req.logger.http(`Petición llegó al controlador (deleteProduct).`);
 
     try {
         const product = await deleteOneProduct(idProduct);
@@ -114,6 +133,7 @@ export const deleteProduct = async (req, res, next) => {
         });
 
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 }

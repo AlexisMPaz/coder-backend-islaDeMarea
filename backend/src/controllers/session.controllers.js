@@ -9,6 +9,9 @@ import { generateUserErrorInfo } from '../utils/customErrors/info.js';
 
 
 export const loginUser = async (req, res, next) => {
+
+    req.logger.http(`Petición llegó al controlador (loginUser).`);
+
     try {
         passport.authenticate('jwt', { session: false }, async (err, user, info) => {
             if (err) {
@@ -30,9 +33,9 @@ export const loginUser = async (req, res, next) => {
                         message: "Contraseña no valida",
                     })
                 }
-                const token = jwt.sign({ user: { id: userDB._id} }, process.env.JWT_SECRET);
+                const token = jwt.sign({ user: { id: userDB._id } }, process.env.JWT_SECRET);
                 res.cookie(`jwt`, token, { httpOnly: true })
-                res.status(201).json({ 
+                res.status(201).json({
                     user: userDB,
                     message: "Estas logeado"
                 })
@@ -55,11 +58,15 @@ export const loginUser = async (req, res, next) => {
         })(req, res, next)
 
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 }
 
 export const registerUser = async (req, res, next) => {
+
+    req.logger.http(`Petición llegó al controlador (registerUser).`);
+
     try {
         const { first_name, last_name, email, age, password } = req.body;
 
@@ -89,20 +96,24 @@ export const registerUser = async (req, res, next) => {
                 password: hashPassword,
                 idCart: newCart._id
             })
-            const token = jwt.sign({ user: { id: newUser._id} }, process.env.JWT_SECRET);
+            const token = jwt.sign({ user: { id: newUser._id } }, process.env.JWT_SECRET);
             res.cookie('jwt', token, { httpOnly: true });
-            res.status(201).json({ 
-                user:newUser,
+            res.status(201).json({
+                user: newUser,
                 message: "Te has logeado satisfactoriamente"
             })
         }
 
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 }
 
 export const logoutUser = async (req, res, next) => {
+
+    req.logger.http(`Petición llegó al controlador (logoutUser).`);
+
     try {
         const token = req.cookies.jwt;
         if (!token) {
@@ -120,27 +131,47 @@ export const logoutUser = async (req, res, next) => {
             res.status(200).send({ message: 'Sesión cerrada exitosamente' });
         });
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 };
 
 export const getSession = async (req, res, next) => {
+
+    req.logger.http(`Petición llegó al controlador (getSession).`);
+
     try {
-        const token = req.cookies.jwt;
-        if (!token) {
-            return res.status(401).json({
-                message: 'No se proporcionó ninguna token de autenticación'
-            });
-        }
-        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+        passport.authenticate('jwt', { session: false }, async (err, user, info) => {
             if (err) {
-                return res.status(401).json({ message: 'Token no válida' });
+                return res.status(401).send({
+                    message: "Error en consulta de token",
+                })
             }
 
-            res.status(200).json({ decodedToken });
-        });
+            if (!user) {
+                return res.status(401).send({
+                    message: "No se ha encontrado información del usuario",
+                })
+            }
+
+            const token = req.cookies.jwt;
+            jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+                if (err) {
+                    return res.status(401).send({
+                        message: "Credenciales no validas",
+                    })
+                }
+
+                return res.status(200).send({
+                    message: "Se ha encontrado los datos del usuario",
+                    pyaload: user
+                })
+            })
+
+        })(req, res, next)
 
     } catch (error) {
+        req.logger.error(error.message)
         next(error)
     }
 };

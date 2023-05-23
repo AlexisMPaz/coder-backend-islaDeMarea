@@ -12,12 +12,9 @@ Antes de iniciar la aplicacion se debe instalar las dependencias con:
 
 Para iniciar el servidor (script):
 
-(puerto 8080, usar este para poder probar el frontend):
-- npm run dev
-(puerto 4000)
-- npm run prod
+* (puerto 8080, entorno desarrollo): npm run dev
 
-La unica diferencia que tienen los 2 modos es el puerto para testear que funcione command con dotenv.
+* (puerto 4000, entorno produccion): npm run prod
 
 Para iniciar el frontend (Next.js 13):
 - npm run dev
@@ -32,22 +29,23 @@ Tambien se puede comentar el codigo de cors para que no entre en conflicto con l
 
 **Backend**
 
-* Mocking:
+* Implementación del logger para la gestión de registros en la aplicación.
 
-- Creada la ruta GET "/api/mocking/mockingproducts" Usa faker para crear 100 productos random y devuelve la totalidad de los productos de prueba en la base de datos.
+* Utilización de la biblioteca Winston para el manejo de registros.
 
-* Manejo de errores:
+* Configuración del logger con niveles de registro personalizados y colores para cada nivel.
 
-- En la carpeta utils/customErrors hay 3 archivos:
-  CustomError.js: Define la clase de los errores customizables.
-  enums.js: diccionario con los codigos de los errores.
-  info.js: Mensajes variables que se usan en algunas causas concretas de los errores customizables. Por el momento se hicieron 3, para cuando hay campos incompletos al registrar un usuario nuevo, campos incompletos al agregar un producto nuevo y cuando se ingresa una cantidad superior al stock disponible de un producto.
+* Formateo de los registros con información de nivel, mensaje y marca de tiempo.
 
-- En el archivo config/middlewares/errorHandler se encuentra el middleware encargado de trabajar con los errores que le envia los controladores. Cuando le llega un error que no pertenece a ninguna categoria manda una respuesta con status 500 y un error generico del servidor.
+* Añadido transporte Console para imprimir los registros en la consola. En entorno de desarrollo desde nivel debug y en entorno de produccion desde nivel info.
 
-- Hay errores customizados en los controladores de postProduct, updateProductQuantity, deleteCartProduct registeruser.
-- Todos los catch de controladores han sido modificados para que le envien en error al middleware.
-- Se han creado errores customizados a todos los servicios.
+* Añadido transporte File para almacenar los registros de nivel error y fatal en un archivo errors.log.
+
+* Configuración para que el transporte File se aplique solo en el entorno de producción.
+
+* Añadida ruta ("/api/loggertest") para testear el logger de forma sencilla.
+
+* Se han agregado algunos loggers en los controladores, mas se agregaran en el futuro cuando corresponda.
 
 **Frontend**
 

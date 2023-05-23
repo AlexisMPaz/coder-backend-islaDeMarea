@@ -29,6 +29,7 @@ export default (error, req, res, next) => {
             break;
 
         default:
+            req.logger.fatal(error.message)
             res.status(500)
                 .json({ status: "error", error: "Error en el servidor", message: error.message })
     }
