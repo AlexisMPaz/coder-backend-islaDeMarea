@@ -25,7 +25,7 @@ Para testear la aplicacion con postman se debe agregar en los request, el header
 key: Origin         value: http://localhost:3000 (IMPORTANTE)
 Tambien se puede comentar el codigo de cors para que no entre en conflicto con los request pero es necesario para que funcione el frontend asi que no se recomienda.
 
-**Mocking y manejo de errores**
+**Implementacion de Logger**
 
 **Backend**
 
