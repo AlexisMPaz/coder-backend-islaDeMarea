@@ -5,7 +5,7 @@ import UserContext from '@/context/UserContext';
 export default function ProductsPage() {
     const { user } = useContext(UserContext)
     const [products, setProducts] = useState([]);
-    const [message, setMessage] = useState(null); 
+    const [alertMessage, setAlertMessage] = useState(null); 
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -21,7 +21,7 @@ export default function ProductsPage() {
             const data = await response.json();
             setProducts(data.payload);
           } catch (error) {
-            setMessage("No se pudo conectar con el servidor, intente mas tarde")
+            setAlertMessage("No se pudo conectar con el servidor, intente mas tarde")
             console.error('Error fetching products:', error);
           }
         };
@@ -31,7 +31,7 @@ export default function ProductsPage() {
 
     return (
         <div className="container mainContainer">
-            {message && <div className="alert alert-danger" style={{ maxWidth: '500px', margin: '2rem auto' }}>{message}</div>}
+            {alertMessage && <div className="alert alert-danger" style={{ maxWidth: '500px', margin: '2rem auto' }}>{alertMessage}</div>}
             {user && <div className="alert alert-primary" style={{ maxWidth: '500px', margin: '2rem auto' }}>Hola {user.first_name}, tu rol es {user.role} </div>}
             <div className="row">
                 {products.map(product => (
@@ -45,9 +45,9 @@ export default function ProductsPage() {
                                     <div className="card-body">
                                         <h4 className="card-title itemName">{product.title}</h4>
                                         <p className="card-text itemType">{product.description}</p>
-                                        <p className="card-text">Codigo: {product.code}</p>
-                                        <p className="card-text">Stock: {product.stock}</p>
-                                        <p className="card-text">Precio: {product.price} <img src="/img/coin.png" alt="Monedas" /></p>
+                                        <p className="card-text itemInfo">Codigo: {product.code}</p>
+                                        <p className="card-text itemInfo">Stock: {product.stock}</p>
+                                        <p className="card-text itemInfo">Precio: {product.price} <img src="/img/coin.png" alt="Monedas" /></p>
                                     </div>
                                 </div>
                             </div>

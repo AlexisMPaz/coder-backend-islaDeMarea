@@ -41,7 +41,7 @@ export default function LoginPage() {
 
     return (
         <div className="container mainContainer">
-            {message && <div className="alert alert-danger" style={{ maxWidth: '500px', margin: '2rem auto' }}>{message}</div>}
+            {message && <div className="alert alert-danger">{message}</div>}
             <div style={{ maxWidth: '500px', margin: '2rem auto' }}>
 
                 <form className="mb-3" onSubmit={consultarForm} ref={datForm}>
@@ -61,6 +61,9 @@ export default function LoginPage() {
 
                 <div className="d-flex justify-content-center mb-3">
                     <Link href="/register" className="btn btn-outline-warning">Registrarse</Link>
+                </div>
+                <div className="d-flex justify-content-center mb-3">
+                    <Link href="/forgotpassword" className="btn btn-outline-warning">Recuperar contraseña</Link>
                 </div>
             </div>
         </div>

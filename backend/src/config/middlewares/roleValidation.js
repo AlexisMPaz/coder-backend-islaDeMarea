@@ -1,4 +1,4 @@
-export const roleValidation = (role) => {
+export const roleValidation = (roles) => {
     return async (req, res, next) => {
         if (!req.user) {
             return res.status(401).send({
@@ -6,7 +6,7 @@ export const roleValidation = (role) => {
             })
         }
     
-        if (req.user.role !== role) {
+        if (!roles.includes(req.user.role)) {
             return res.status(401).send({ 
                 message: "No posee los permisos de rol necesarios" 
             });

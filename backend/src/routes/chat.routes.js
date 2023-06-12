@@ -6,5 +6,5 @@ import { postMessage, getMessages } from "../controllers/chat.controllers.js";
 export const routerChat = Router();
 
 //("api/chat")
-routerChat.post('/', passportError("jwt"), roleValidation("Usuario"), postMessage);
+routerChat.post('/', passportError("jwt"), roleValidation(["usuario", "premium"]), postMessage);
 routerChat.get('/', passportError("jwt"), getMessages);

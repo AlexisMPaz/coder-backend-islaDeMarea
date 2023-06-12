@@ -3,15 +3,15 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState([]);
+  const [newChatMessage, setNewChatMessage] = useState('');
   const [alertMessage, setAlertMessage] = useState(null);
 
   useEffect(() => {
     const socket = io("http://localhost:8080");
 
     socket.on("messagesUpdated", (updatedMessages) => {
-      setMessages(updatedMessages);
+      setChatMessages(updatedMessages);
     });
 
     const fetchMessages = async () => {
@@ -26,7 +26,7 @@ const ChatPage = () => {
         });
         const data = await response.json();
         if(data.messages) {
-          setMessages(data.messages);
+          setChatMessages(data.messages);
         } else {
           setAlertMessage("Necesitas estar logeado para chatear")
         }
@@ -51,18 +51,18 @@ const ChatPage = () => {
           'Content-Type': 'application/json',
           Origin: 'http://localhost:3000',
         },
-        body: JSON.stringify({ message: newMessage }),
+        body: JSON.stringify({ message: newChatMessage }),
         credentials: 'include',
       });
 
       if (response.ok) {
-        setNewMessage('');
+        setNewChatMessage('');
       } else {
         const data = await response.json();
         setAlertMessage(data.message);
       }
     } catch (error) {
-      setAlertMessage("No se ha podido conectar al chat, recuerda que tienes que estar logeado y no ser Admin");
+      setMessage("No se ha podido conectar al chat, recuerda que tienes que estar logeado y no ser Admin");
     }
   };
 
@@ -70,11 +70,11 @@ const ChatPage = () => {
     <div className="container mainContainer">
       {alertMessage && <div className="alert alert-danger" style={{ maxWidth: '500px', margin: '2rem auto' }}>{alertMessage}</div>}
       <div style={{ maxWidth: '500px', margin: '2rem auto' }}>
-        {messages.map((message) => (
-            <div key={message._id}>{message.user} ({message.email}): {message.message}</div>
+        {chatMessages.map((chatMessage) => (
+            <div key={chatMessage._id}>{chatMessage.user} ({chatMessage.email}): {chatMessage.message}</div>
         ))}
       </div>
-      <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)}/>
+      <input type="text" value={newChatMessage} onChange={(e) => setNewChatMessage(e.target.value)}/>
       <button onClick={handleSendMessage}>Enviar</button>
     </div>
   );

@@ -8,6 +8,6 @@ export const routerProduct = Router();
 //("api/products")
 routerProduct.get('/', getProducts);
 routerProduct.get('/:pid', getProduct);
-routerProduct.post('/', passportError("jwt"), roleValidation("Admin"), postProduct);
-routerProduct.put('/:pid', passportError("jwt"), roleValidation("Admin"), updateProduct);
-routerProduct.delete('/:pid', passportError("jwt"), roleValidation("Admin"), deleteProduct);
+routerProduct.post('/', passportError("jwt"), roleValidation(["admin", "premium"]), postProduct);
+routerProduct.put('/:pid', passportError("jwt"), roleValidation(["admin", "premium"]), updateProduct);
+routerProduct.delete('/:pid', passportError("jwt"), roleValidation(["admin", "premium"]), deleteProduct);

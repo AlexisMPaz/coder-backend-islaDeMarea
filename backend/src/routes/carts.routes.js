@@ -7,11 +7,11 @@ export const routerCarts = Router();
 
 
 //("api/carts")
-routerCarts.get('/', passportError("jwt"), roleValidation("Usuario"), getCart);
-routerCarts.put('/', passportError("jwt"), roleValidation("Usuario"), updateCartProducts);
-routerCarts.post('/product/:pid', passportError("jwt"), roleValidation("Usuario"), addProductToCart);
-routerCarts.put('/product/:pid', passportError("jwt"), roleValidation("Usuario"), updateProductQuantity);
-routerCarts.delete('/', passportError("jwt"), roleValidation("Usuario"), deleteCartProducts);
-routerCarts.delete('/product/:pid', passportError("jwt"), roleValidation("Usuario"), deleteCartProduct);
-routerCarts.post('/purchase', passportError("jwt"), roleValidation("Usuario"),  createTicket);
+routerCarts.get('/', passportError("jwt"), roleValidation(["usuario", "premium"]), getCart);
+routerCarts.put('/', passportError("jwt"), roleValidation(["usuario", "premium"]), updateCartProducts);
+routerCarts.post('/product/:pid', passportError("jwt"), roleValidation(["usuario", "premium"]), addProductToCart);
+routerCarts.put('/product/:pid', passportError("jwt"), roleValidation(["usuario", "premium"]), updateProductQuantity);
+routerCarts.delete('/', passportError("jwt"), roleValidation(["usuario", "premium"]), deleteCartProducts);
+routerCarts.delete('/product/:pid', passportError("jwt"), roleValidation(["usuario", "premium"]), deleteCartProduct);
+routerCarts.post('/purchase', passportError("jwt"), roleValidation(["usuario", "premium"]),  createTicket);
 

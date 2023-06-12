@@ -1,7 +1,8 @@
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { comparePassword, createHash } from '../utils/bcrypt/bcrypt.js'
-import { createUser, findUserByEmail } from '../service/userService.js';
+import { createUser, findUserByEmail, findUserById, updateUser } from '../service/userService.js';
+import { sendResetMail } from "../utils/nodemailer/nodemailer.js";
 import { createCart } from '../service/cartService.js';
 import CustomError from "../utils/customErrors/CustomError.js";
 import { EErrors } from "../utils/customErrors/enums.js";
@@ -175,3 +176,72 @@ export const getSession = async (req, res, next) => {
         next(error)
     }
 };
+
+export const sendResetToken = async (req, res, next) => {
+    req.logger.http(`Petición llegó al controlador (sendResetToken).`);
+    const { email } = req.body;
+    if (!email) {
+        return res.status(404).json({
+            message: "Debe ingresar un email válido"
+        });
+    }
+
+    try {
+        const user = await findUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({
+                message: "El email no esta registrado"
+            });
+        }
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        req.logger.debug(token)
+        await sendResetMail(token, email);
+        return res.status(200).json({
+            message: "Ha sido enviado un email con el link para recuperar la contraseña"
+        });
+
+    } catch (error) {
+        req.logger.error(error.message)
+        next(error)
+    }
+};
+
+export const resetUserPassword = async (req, res, next) => {
+    req.logger.http(`Petición llegó al controlador (resetUserPassword).`);
+    const { newPassword, token } = req.body;
+    if (!newPassword) {
+        return res.status(404).json({
+            message: "Debe ingresar una contraseña válida"
+        });
+    }
+
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        req.logger.debug(decodedToken)
+        const userId = decodedToken.userId;
+        const userDB = await findUserById(userId);
+        if (!userDB) {
+            return res.status(404).json({ 
+                message: 'Usuario no encontrado.'
+            });
+        }
+        if (comparePassword(newPassword, userDB.password)) {
+            return res.status(404).json({ 
+                message: 'La nueva contraseña no puede ser la misma que la anterior'
+            });
+        }
+        const hashPassword = createHash(newPassword);
+        await updateUser(userId, {password: hashPassword})
+        
+        return res.status(200).json({
+            message: "La contraseña ha sido actualizada"
+        });
+
+    } catch (error) {
+        req.logger.error(error.message)
+        next(error)
+    }
+};
+
+
+

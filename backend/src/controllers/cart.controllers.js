@@ -37,8 +37,7 @@ export const updateCartProducts = async (req, res, next) => {
 }
 
 export const addProductToCart = async (req, res, next) => {
-
-    const idCart = req.user.idCart;
+    const user = req.user
     const idProduct = req.params.pid;
 
     req.logger.http(`Petición llegó al controlador (addProductToCart).`);
@@ -47,14 +46,14 @@ export const addProductToCart = async (req, res, next) => {
         const realProduct = await findProductById(idProduct);
 
         if (realProduct) {
-            const cart = await findCartById(idCart);
+            const cart = await findCartById(user.idCart);
             const productIndex = cart.products.findIndex(product => product.productId.equals(idProduct));
             if (productIndex === -1) {
                 cart.products.push({ productId: idProduct });
             } else {
                 cart.products[productIndex].quantity += 1;
             }
-            const updatedCart = await updateCart(idCart, cart);
+            const updatedCart = await updateCart(user.idCart, cart);
             req.logger.debug(updatedCart)
             return res.status(200).send("Producto agregado al carrito")
         }
