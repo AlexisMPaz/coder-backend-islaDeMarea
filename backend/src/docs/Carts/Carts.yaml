@@ -1,172 +1,272 @@
-paths:
-  /api/users/:
-    get:
-      summary: "Consulta todos los usuarios"
-      tags:
-        - Users
-      responses:
-        "200":
-          description: "Usuarios encontrados"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#components/schemas/User"
-        "500":
-          description: "Error del servidor al obtener los usuarios"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-
 components:
+  securitySchemes:
+    JWTAuth:
+      type: apiKey
+      in: cookie
+      name: jwt
+      description: Incluir el token JWT como una cookie llamada "jwt"
+
   schemas:
-    User:
+    Cart:
+      type: object
+      properties:
+        products:
+          type: array
+          description: "Productos dentro del carrito, si no hay productos es un array vacío"
+          items:
+            type: object
+            properties:
+              productId: 
+                type: ObjectId
+                ref: "products"
+                description: "Id del producto"
+              quantity:
+                type: number
+                description: "Cantidad del producto"
+        total:
+          type: number
+          description: "Precio total de los productos"
+      example:
+        _id: "6456c1b4bde9e2d17c72a338"
+        total: 0
+        products: [
+          {
+            productId: "6456c1b4bde9e2d17c72a5gg",
+            quantity: 1
+          }
+        ]
+
+    Ticket:
       type: object
       properties:
         _id:
           type: ObjectId
           description: "Id autogenerado"
-        first_name:
+        code:
+          type: Number
+          description: "Código autogenerado"
+        purchase_datetime:
+          type: Date
+          description: "Día y hora de la compra"
+        amount:
+          type: Number
+          description: "Precio total de la compra"
+        purchaser:
           type: String
-          description: "Nombre del Usuario"
-        last_name:
-          type: String
-          description: "Apellido del Usuario"
-        email:
-          type: String
-          description: "Email del Usuario"
-        password:
-          type: String
-          description: "Contraseña del Usuario"
-        role:
-          type: String
-          description: "Rol del Usuario"
-        pets:
-          type: Array
-          description: "Mascotas del Usuario"
+          description: "Email del comprador"
+
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: "Id autogenerado"
+        title:
+          type: string
+          description: "Nombre del Producto"
+        description:
+          type: string
+          description: "Descripción del Producto"
+        code:
+          type: string
+          description: "Código alfanumérico del Producto"
+        price:
+          type: number
+          description: "Precio del Producto"
+        status:
+          type: boolean
+          description: "Disponibilidad del Producto"
+        stock:
+          type: number
+          description: "Cantidad disponible del Producto"
+        category:
+          type: string
+          description: "Categoría del Producto"
+        thumbnails:
+          type: array
+          description: "Imágenes del Producto"
+          items:
+            type: string
       example:
-        _id: ObjectId("12bb12bb12bb12bb12bb12bb")
-        first_name: "Christopher"
-        last_name: "Cisneros"
-        email: chris@chris.com
-        password: "1hda1fe1as1"
-        role: "User"
-        pets: [ObjectId("13bb13bb13bb13bb13bb13bb")]
+        _id: "12bb12bb12bb12bb12bb12bb"
+        title: "Artefacto"
+        description: "Un artefacto de gran poder"
+        code: "ZZ999"
+        price: 1000
+        status: true
+        stock: 30
+        category: armas
+        thumbnails: ["/img/artefacto.png"]
+
+security:
+  - JWTAuth: []
+
+paths:
+  /api/carts:
+    get:
+      summary: "Devuelve el carrito del usuario logeado (User)"
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: "Carrito encontrado"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        '400':
+          description: "Error al encontrar el carrito"
+        '401':
+          description: "No hay sesion activa"
+        "500":
+          description: "Error del servidor al encontrar el carrito"
+
+    put:
+      summary: "Sobreescribe los productos del carrito con un nuevo array (User)"
+      tags:
+        - Carts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+            example:
+              [
+                {productId: "6456c1b4bde9e2d17c72a5gg"},
+                {productId: "6456c1b4bde9e2d17c72a5g2"}
+              ]
+      responses:
+        "200":
+          description: "Array de productos del carrito actualizado"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        '400':
+          description: "Error al modificar el carrito"
+        '401':
+          description: "No hay sesion activa"
+        "500":
+          description: "Error del servidor"
+
+    delete:
+      summary: "Elimina todos los productos dentro del carrito (User)"
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: "carrito eliminado"
+        '400':
+          description: "Error al eliminar los productos del carrito"
+        '401':
+          description: No hay sesion activa
+        "500":
+          description: "Error del servidor"
+
+  /api/carts/{pid}:
+    post:
+      summary: "Agregar un producto al carrito por el Id (User)"
+      tags:
+        - Carts
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "Id del producto a agregar al carrito"
+        schema: 
+          $type: String
+      responses:
+        "200":
+          description: "Producto agregado al carrito"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        '400':
+          description: "Error al agregar el producto"
+        '401':
+          description: No hay sesion activa
+        "500":
+          description: "Error del servidor"
+
+    put:
+      summary: "Actualizar la cantidad de un producto dentro del carrito por el Id (User)"
+      tags:
+        - Carts
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "Id del producto dentro del carrito a actualizar"
+        schema: 
+          $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: string
+                  description: Nueva cantidad del producto
+      responses:
+        "200":
+          description: "Cantidad actualizada"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        '400':
+          description: "Error al actualizar la cantidad del producto"
+        '401':
+          description: No hay sesion activa
+        "500":
+          description: "Error del servidor"
+
+    delete:
+      summary: "Elimina un producto por el Id (User)"
+      tags:
+        - Carts
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "Id del producto a eliminar del carrito"
+        schema: 
+          $type: String
+      responses:
+        "200":
+          description: "Producto a eliminado del carrito"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        '400':
+          description: "Error al intentar eliminar el producto del carrito"
+        '401':
+          description: No hay sesion activa
+        "500":
+          description: "Error del servidor"
+
+  /api/carts/purchase:
+    get:
+      summary: "Genera el Ticket de la compra con los productos del carrito (User)"
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: "Ticket generado, el carrito vuelve a estar vacío"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Ticket"
+        '400':
+          description: "Error al generar el Ticket"
+        '401':
+          description: No hay sesion activa
+        "500":
+          description: "Error del servidor"

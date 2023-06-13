@@ -25,27 +25,13 @@ Para testear la aplicacion con postman se debe agregar en los request, el header
 key: Origin         value: http://localhost:3000 (IMPORTANTE)
 Tambien se puede comentar el codigo de cors para que no entre en conflicto con los request pero es necesario para que funcione el frontend asi que no se recomienda.
 
-**Implementacion de Logger**
+**Documentar API**
 
 **Backend**
 
-* Implementación del logger para la gestión de registros en la aplicación.
+* Se ha realizado la documentacion de la api para los endpoints de Products y Carts.
 
-* Utilización de la biblioteca Winston para el manejo de registros.
-
-* Configuración del logger con niveles de registro personalizados y colores para cada nivel.
-
-* Formateo de los registros con información de nivel, mensaje y marca de tiempo.
-
-* Añadido transporte Console para imprimir los registros en la consola. En entorno de desarrollo desde nivel debug y en entorno de produccion desde nivel info.
-
-* Añadido transporte File para almacenar los registros de nivel error y fatal en un archivo errors.log.
-
-* Configuración para que el transporte File se aplique solo en el entorno de producción.
-
-* Añadida ruta ("/api/loggertest") para testear el logger de forma sencilla.
-
-* Se han agregado algunos loggers en los controladores, mas se agregaran en el futuro cuando corresponda.
+* "localhost:8080/apidocs": Ruta para acceder a la interfaz grafica de Swagger
 
 **Frontend**
 

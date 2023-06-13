@@ -1,132 +1,321 @@
-paths:
-  /api/users/:
-    get:
-      summary: "Consulta todos los usuarios"
-      tags:
-        - Users
-      responses:
-        "200":
-          description: "Usuarios encontrados"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#components/schemas/User"
-        "500":
-          description: "Error del servidor al obtener los usuarios"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-  /api/users/{uid}:
-    get:  
-      summary: "Consultar un usuario dado su id"
-      tags:
-        - Users
-      parameters:
-      - name: uid
-        in: path
-        required: true
-        description: "Id del usuario solicitado"
-        schema: 
-          $type: String
-      
-      responses:
-        "200":
-          description: "Usuario encontrado"
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-
 components:
+  securitySchemes:
+    JWTAuth:
+      type: apiKey
+      in: cookie
+      name: jwt
+      description: Incluir el token JWT como una cookie llamada "jwt"
+
   schemas:
-    User:
+    Product:
       type: object
       properties:
         _id:
-          type: ObjectId
+          type: string
           description: "Id autogenerado"
-        first_name:
-          type: String
-          description: "Nombre del Usuario"
-        last_name:
-          type: String
-          description: "Apellido del Usuario"
-        email:
-          type: String
-          description: "Email del Usuario"
-        password:
-          type: String
-          description: "Contraseña del Usuario"
-        role:
-          type: String
-          description: "Rol del Usuario"
-        pets:
-          type: Array
-          description: "Mascotas del Usuario"
+        title:
+          type: string
+          description: "Nombre del Producto"
+        description:
+          type: string
+          description: "Descripción del Producto"
+        code:
+          type: string
+          description: "Código alfanumérico del Producto"
+        price:
+          type: number
+          description: "Precio del Producto"
+        status:
+          type: boolean
+          description: "Disponibilidad del Producto"
+        stock:
+          type: number
+          description: "Cantidad disponible del Producto"
+        category:
+          type: string
+          description: "Categoría del Producto"
+        thumbnails:
+          type: array
+          description: "Imágenes del Producto"
+          items:
+            type: string
       example:
-        _id: ObjectId("12bb12bb12bb12bb12bb12bb")
-        first_name: "Christopher"
-        last_name: "Cisneros"
-        email: chris@chris.com
-        password: "1hda1fe1as1"
-        role: "User"
-        pets: [ObjectId("13bb13bb13bb13bb13bb13bb")]
+        _id: "12bb12bb12bb12bb12bb12bb"
+        title: "Artefacto"
+        description: "Un artefacto de gran poder"
+        code: "ZZ999"
+        price: 1000
+        status: true
+        stock: 30
+        category: armas
+        thumbnails: ["/img/artefacto.png"]
+
+    PaginateProducts:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Estado de la respuesta
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+          description: Lista de productos
+        totalPages:
+          type: integer
+          description: Número total de páginas
+        prevPage:
+          type: integer
+          nullable: true
+          description: Página anterior
+        nextPage:
+          type: integer
+          nullable: true
+          description: Página siguiente
+        page:
+          type: integer
+          description: Página actual
+        hasPrevPage:
+          type: boolean
+          nullable: true
+          description: Indicador de existencia de página anterior
+        hasNextPage:
+          type: boolean
+          nullable: true
+          description: Indicador de existencia de página siguiente
+        prevLink:
+          type: string
+          nullable: true
+          description: Enlace a la página anterior
+        nextLink:
+          type: string
+          nullable: true
+          description: Enlace a la página siguiente
+      example:
+        status: "success"
+        payload:
+          - _id: "12bb12bb12bb12bb12bb12bb"
+            title: "Artefacto"
+            description: "Un artefacto de gran poder"
+            code: "ZZ999"
+            price: 1000
+            status: true
+            stock: 30
+            category: armas
+            thumbnails: ["/img/artefacto.png"]
+        totalPages: 1
+        prevPage: null
+        nextPage: null
+        page: 1
+        hasPrevPage: null
+        hasNextPage: null
+        prevLink: null
+        nextLink: null
+
+security:
+  - JWTAuth: []
+
+paths:
+  /api/products:
+    get:
+      summary: Consulta todos los Productos
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Cantidad máxima de productos por página
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página actual
+        - in: query
+          name: sort
+          schema:
+            type: string
+            default: ""
+          description: >
+            Campo para ordenar los productos por el precio.
+            Si el valor se deja vacío, los productos no se ordenan.
+            Si el valor es "desc", los productos se ordenan de mayor a menor.
+            Si el valor es distinto de "desc", los productos se ordenan de menor a mayor.
+        - in: query
+          name: category
+          schema:
+            type: string
+            default: ""
+          description: Categoría de los productos
+      responses:
+        '200':
+          description: Productos encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginateProducts"
+        '400':
+          description: Error al encontrar los productos
+        '500':
+          description: Error del servidor
+
+    post:
+      summary: Crear un nuevo producto (Admin)
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - code
+                - price
+                - status
+                - stock
+                - category
+                - thumbnails
+              properties:
+                title:
+                  type: string
+                  description: Título del producto
+                description:
+                  type: string
+                  description: Descripción del producto
+                code:
+                  type: string
+                  description: Código del producto
+                price:
+                  type: number
+                  description: Precio del producto
+                status:
+                  type: boolean
+                  description: Estado del producto
+                stock:
+                  type: integer
+                  description: Cantidad en stock del producto
+                category:
+                  type: string
+                  description: Categoría del producto
+                thumbnails:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista de enlaces a las imágenes en miniatura
+      responses:
+        '200':
+          description: Producto creado exitosamente
+        '400':
+          description: Error al crear el producto
+        '401':
+          description: No hay sesion activa
+        '500':
+          description: Error del servidor
+  /api/products/{pid}:
+    get:
+      summary: "Consulta un producto por el Id"
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: "Id del producto solicitado"
+          schema: 
+            $type: String
+      responses:
+          '200':
+            description: Producto encontrado
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Product"
+          '400':
+            description: Error al encontrar el producto
+          '500':
+            description: Error del servidor
+
+    put:
+      summary: "Busca un producto por el Id y lo modifica con la nueva informacion proporcionada por el body (Admin)"
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: "Id del producto solicitado"
+          schema: 
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Título del producto
+                description:
+                  type: string
+                  description: Descripción del producto
+                code:
+                  type: string
+                  description: Código del producto
+                price:
+                  type: number
+                  description: Precio del producto
+                status:
+                  type: boolean
+                  description: Estado del producto
+                stock:
+                  type: integer
+                  description: Cantidad en stock del producto
+                category:
+                  type: string
+                  description: Categoría del producto
+                thumbnails:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista de enlaces a las imágenes en miniatura
+      responses:
+          '200':
+            description: Producto actualizado.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Product"
+          '400':
+            description: Error al actualizar el producto
+          '401':
+            description: No hay sesion activa
+          '500':
+            description: Error del servidor
+            
+    delete:
+      summary: "Busca un producto por el Id y lo elimina (Admin)"
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: "Id del producto solicitado"
+          schema: 
+            $type: String
+      responses:
+          '200':
+            description: Producto eliminado
+          '400':
+            description: Error al eliminar el producto
+          '401':
+            description: No hay sesion activa
+          '500':
+            description: Error del servidor

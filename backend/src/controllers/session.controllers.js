@@ -165,7 +165,9 @@ export const getSession = async (req, res, next) => {
 
                 return res.status(200).send({
                     message: "Se ha encontrado los datos del usuario",
-                    pyaload: user
+                    payload: user,
+                    token: token
+
                 })
             })
 

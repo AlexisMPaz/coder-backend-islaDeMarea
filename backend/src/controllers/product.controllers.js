@@ -110,6 +110,12 @@ export const updateProduct = async (req, res, next) => {
 export const deleteProduct = async (req, res, next) => {
     const idProduct = req.params.pid;
 
+    if (!idProduct) {
+        return res.status(400).json({
+            message: "No se ha proporcionado un Id valido"
+        })
+    }
+
     req.logger.http(`Petición llegó al controlador (deleteProduct).`);
 
     try {
