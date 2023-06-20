@@ -17,6 +17,7 @@ export const loginUser = async (req, res, next) => {
         passport.authenticate('jwt', { session: false }, async (err, user, info) => {
             if (err) {
                 return res.status(401).send({
+                    status: "error",
                     message: "Error en consulta de token",
                 })
             }
@@ -26,17 +27,20 @@ export const loginUser = async (req, res, next) => {
                 const userDB = await findUserByEmail(email)
                 if (!userDB) {
                     return res.status(401).send({
+                        status: "error",
                         message: "Usuario no encontrado",
                     })
                 }
                 if (!comparePassword(password, userDB.password)) {
                     return res.status(401).send({
+                        status: "error",
                         message: "Contraseña no valida",
                     })
                 }
                 const token = jwt.sign({ user: { id: userDB._id } }, process.env.JWT_SECRET);
                 res.cookie(`jwt`, token, { httpOnly: true })
-                res.status(201).json({
+                res.status(200).json({
+                    status: "success",
                     user: userDB,
                     message: "Estas logeado"
                 })
@@ -47,11 +51,13 @@ export const loginUser = async (req, res, next) => {
                 jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
                     if (err) {
                         return res.status(401).send({
+                            status: "error",
                             message: "Credenciales no validas",
                         })
                     }
 
                     return res.status(401).send({
+                        status: "error",
                         message: "Primero debes cerrar la sesión",
                     })
                 })
@@ -83,6 +89,7 @@ export const registerUser = async (req, res, next) => {
         const userDB = await findUserByEmail(email)
         if (userDB) {
             res.status(401).send({
+                status: "error",
                 message: "Usuario ya registrado"
             })
 
@@ -99,7 +106,8 @@ export const registerUser = async (req, res, next) => {
             })
             const token = jwt.sign({ user: { id: newUser._id } }, process.env.JWT_SECRET);
             res.cookie('jwt', token, { httpOnly: true });
-            res.status(201).json({
+            res.status(200).json({
+                status: "success",
                 user: newUser,
                 message: "Te has logeado satisfactoriamente"
             })
@@ -119,17 +127,18 @@ export const logoutUser = async (req, res, next) => {
         const token = req.cookies.jwt;
         if (!token) {
             return res.status(401).send({
+                status: "error",
                 message: 'No se proporcionó ninguna token de autenticación'
             });
         }
 
         jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
             if (err) {
-                return res.status(401).send({ message: 'Token no válida' });
+                return res.status(401).send({status: "error", message: 'Token no válida' });
             }
 
             res.clearCookie('jwt');
-            res.status(200).send({ message: 'Sesión cerrada exitosamente' });
+            res.status(200).send({status: "success", message: 'Sesión cerrada exitosamente' });
         });
     } catch (error) {
         req.logger.error(error.message)
@@ -145,13 +154,15 @@ export const getSession = async (req, res, next) => {
         passport.authenticate('jwt', { session: false }, async (err, user, info) => {
             if (err) {
                 return res.status(401).send({
+                    status: "error",
                     message: "Error en consulta de token",
                 })
             }
 
             if (!user) {
                 return res.status(401).send({
-                    message: "No se ha encontrado información del usuario",
+                    status: "error",
+                    message: "No se ha encontrado al usuario",
                 })
             }
 
@@ -159,11 +170,13 @@ export const getSession = async (req, res, next) => {
             jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
                 if (err) {
                     return res.status(401).send({
+                        status: "error",
                         message: "Credenciales no validas",
                     })
                 }
 
                 return res.status(200).send({
+                    status: "success",
                     message: "Se ha encontrado los datos del usuario",
                     payload: user,
                     token: token
@@ -184,6 +197,7 @@ export const sendResetToken = async (req, res, next) => {
     const { email } = req.body;
     if (!email) {
         return res.status(404).json({
+            status: "error",
             message: "Debe ingresar un email válido"
         });
     }
@@ -192,6 +206,7 @@ export const sendResetToken = async (req, res, next) => {
         const user = await findUserByEmail(email);
         if (!user) {
             return res.status(404).json({
+                status: "error",
                 message: "El email no esta registrado"
             });
         }
@@ -199,6 +214,7 @@ export const sendResetToken = async (req, res, next) => {
         req.logger.debug(token)
         await sendResetMail(token, email);
         return res.status(200).json({
+            status: "success",
             message: "Ha sido enviado un email con el link para recuperar la contraseña"
         });
 
@@ -213,6 +229,7 @@ export const resetUserPassword = async (req, res, next) => {
     const { newPassword, token } = req.body;
     if (!newPassword) {
         return res.status(404).json({
+            status: "error",
             message: "Debe ingresar una contraseña válida"
         });
     }
@@ -224,11 +241,13 @@ export const resetUserPassword = async (req, res, next) => {
         const userDB = await findUserById(userId);
         if (!userDB) {
             return res.status(404).json({ 
+                status: "error",
                 message: 'Usuario no encontrado.'
             });
         }
         if (comparePassword(newPassword, userDB.password)) {
             return res.status(404).json({ 
+                status: "error",
                 message: 'La nueva contraseña no puede ser la misma que la anterior'
             });
         }
@@ -236,6 +255,7 @@ export const resetUserPassword = async (req, res, next) => {
         await updateUser(userId, {password: hashPassword})
         
         return res.status(200).json({
+            status: "success",
             message: "La contraseña ha sido actualizada"
         });
 

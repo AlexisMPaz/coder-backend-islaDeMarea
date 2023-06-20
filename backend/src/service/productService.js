@@ -8,6 +8,7 @@ export const  createProduct = async (product) => {
         await newProduct.save()
         return newProduct
     } catch (error) {
+        console.log(error.message)
         CustomError.createError({
             name: "Error en la base de datos.",
             message: "No se pudo crear el producto.",
@@ -73,7 +74,7 @@ export const deleteOneProduct = async (id) => {
 
 export const updateOneProduct = async (id, info) => {
     try {
-        return await productModel.findByIdAndUpdate(id, info);
+        return await productModel.findByIdAndUpdate(id, info, { new: true });
     } catch (error) {
         CustomError.createError({
             name: "Error en la base de datos.",

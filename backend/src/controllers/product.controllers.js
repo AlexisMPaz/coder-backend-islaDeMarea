@@ -50,11 +50,18 @@ export const getProduct = async (req, res, next) => {
 
         if (product) {
             req.logger.debug(product)
-            return res.status(200).json(product)
+            return res.status(200).json({
+                status: "success",
+                message: "Se ha encontrado el producto",
+                payload: product
+            })
         }
 
         req.logger.warning("No se encontro el producto")
-        return res.status(401).json({ message: "No se encontro el producto" })
+        return res.status(401).json({
+            status: "error",
+            message: "No se encontro el producto" 
+        })
 
     } catch (error) {
         next(error)
@@ -68,12 +75,15 @@ export const postProduct = async (req, res, next) => {
     try {
         const requiredFields = ['title', 'description', 'price', 'code', 'stock', 'category'];
         if (requiredFields.every((field) => productInfo[field])) {
+            req.logger.debug(JSON.stringify(productInfo, null, 2))
             const product = await createProduct(productInfo);
             res.status(200).send({
+                status: "success",
                 message: 'Producto agregado correctamente',
-                product: product
+                payload: product
             });
         } else {
+            req.logger.warning(JSON.stringify(productInfo, null, 2))
             CustomError.createError({
                 name: "Error creando el Producto",
                 message: "No se pudo crear el producto",
@@ -95,10 +105,12 @@ export const updateProduct = async (req, res, next) => {
     req.logger.http(`Petición llegó al controlador (updateProduct).`);
 
     try {
-        await updateOneProduct(idProduct, info);
+        const product = await updateOneProduct(idProduct, info);
 
         return res.status(200).json({
-            message: "Producto actualizado"
+            status: "success",
+            message: "Producto actualizado",
+            payload: product
         });
 
     } catch (error) {
@@ -112,6 +124,7 @@ export const deleteProduct = async (req, res, next) => {
 
     if (!idProduct) {
         return res.status(400).json({
+            status: "error",
             message: "No se ha proporcionado un Id valido"
         })
     }
@@ -122,7 +135,8 @@ export const deleteProduct = async (req, res, next) => {
         await deleteOneProduct(idProduct);
 
         return res.status(200).json({
-            message: "Producto eliminado"
+            status: "success",
+            message: `Producto Id: ${idProduct} eliminado`
         });
 
     } catch (error) {

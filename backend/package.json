@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js --mode DEVELOPMENT",
-    "prod": "nodemon src/index.js --mode PRODUCTION"
+    "prod": "nodemon src/index.js --mode PRODUCTION",
+    "testsessions": "mocha test/sessions.test.js",
+    "testproducts": "mocha test/products.test.js",
+    "testcarts": "mocha test/carts.test.js"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +38,9 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.0",
-    "nodemon": "^2.0.22"
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
   }
 }

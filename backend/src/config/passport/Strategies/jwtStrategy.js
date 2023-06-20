@@ -3,7 +3,6 @@ import { findUserById } from '../../../service/userService.js';
 
 const cookieExtractor = (req) => {
     const cookieHeader = req.headers.Cookie ;
-    console.log(req)
     if (cookieHeader) {
         const cookies = cookieHeader.split(';');
         for (const cookie of cookies) {

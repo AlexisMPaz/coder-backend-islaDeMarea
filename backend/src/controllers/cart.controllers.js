@@ -12,7 +12,11 @@ export const getCart = async (req, res, next) => {
         const cart = await findCartById(idCart);
         const cartPopulate = await cart.populate({ path: "products.productId", model: productModel })
         req.logger.debug(cartPopulate)
-        res.status(200).json({ cartPopulate });
+        res.status(200).json({ 
+            status: "success",
+            message: "Carrito encontrado",
+            payload: cartPopulate 
+        });
     } catch (error) {
         req.logger.error(error.message)
         next(error)
@@ -27,8 +31,12 @@ export const updateCartProducts = async (req, res, next) => {
     req.logger.http(`Petición llegó al controlador (updateCartProducts).`);
 
     try {
-        await updateCart(idCart, { products: info });
-        return res.status(200).send("Carrito actualizado")
+        const updatedCart = await updateCart(idCart, { products: info });
+        return res.status(200).send({
+            status: "success",
+            message: "Carrito actualizado",
+            payload: updatedCart
+        })
 
     } catch (error) {
         req.logger.error(error.message)
@@ -55,7 +63,11 @@ export const addProductToCart = async (req, res, next) => {
             }
             const updatedCart = await updateCart(user.idCart, cart);
             req.logger.debug(updatedCart)
-            return res.status(200).send("Producto agregado al carrito")
+            return res.status(200).send({
+                status: "success",
+                message: "Producto agregado al carrito",
+                payload: updatedCart
+            })
         }
 
         req.logger.warning(`El producto con id: ${idProduct} no existe en la base de datos.`)
@@ -108,8 +120,12 @@ export const updateProductQuantity = async (req, res, next) => {
         }
 
         cart.products[productIndex].quantity = newQuantity;
-        await updateCart(idCart, cart);
-        return res.status(200).send("Cantidad del producto actualizada")
+        const updatedCart = await updateCart(idCart, cart);
+        return res.status(200).send({
+            status: "success",
+            message: `Cantidad del producto Id: ${idProduct} ha sido actualizada`,
+            payload: updatedCart
+        })
 
     } catch (error) {
         req.logger.error(error.message)
@@ -124,8 +140,12 @@ export const deleteCartProducts = async (req, res, next) => {
     req.logger.http(`Petición llegó al controlador (deleteCartProducts).`);
 
     try {
-        await updateCart(idCart, { products: [] });
-        return res.status(200).send("Productos borrados")
+        const updatedCart = await updateCart(idCart, { products: [] });
+        return res.status(200).send({
+            status: "success",
+            message: "Productos borrados",
+            payload: updatedCart
+        })
 
     } catch (error) {
         next(error)
@@ -151,8 +171,12 @@ export const deleteCartProduct = async (req, res, next) => {
             })
         }
         cart.products.splice(productIndex, 1);
-        await updateCart(idCart, cart);
-        return res.status(200).send("El producto ha sido eliminado del carrito")
+        const updatedCart = await updateCart(idCart, cart);
+        return res.status(200).send({
+            status: "success",
+            message: `El producto Id: ${idProduct} ha sido eliminado del carrito`,
+            payload: updatedCart
+        })
 
     } catch (error) {
         req.logger.error(error.message)
@@ -185,7 +209,11 @@ export const createTicket = async (req, res, next) => {
         const updatedCart = await updateCart(idCart, cart);
 
         if (updatedCart.total !== amount) {
-            return res.status(400).send("Algunos productos no tienen suficiente stock");
+            return res.status(400).send({
+                status: "error",
+                message: "Algunos productos no tienen suficiente stock, han sido removidos del carrito",
+                payload: updatedCart
+            });
         }
 
         const newTicket = await createNewTicket({amount, purchaser});
@@ -199,7 +227,11 @@ export const createTicket = async (req, res, next) => {
 
         await updateCart(idCart, { products: [] });
 
-        return res.status(200).send({message: "El Ticket ha sido creado", ticket: newTicket})
+        return res.status(200).send({
+            status: "success",
+            message: "El Ticket ha sido creado",
+            payload: newTicket
+        })
 
     } catch (error) {
         req.logger.error(error.message)
