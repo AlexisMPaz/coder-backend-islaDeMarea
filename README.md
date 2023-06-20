@@ -25,13 +25,18 @@ Para testear la aplicacion con postman se debe agregar en los request, el header
 key: Origin         value: http://localhost:3000 (IMPORTANTE)
 Tambien se puede comentar el codigo de cors para que no entre en conflicto con los request pero es necesario para que funcione el frontend asi que no se recomienda.
 
-**Documentar API**
+**Módulos de testing para el Proyecto Final**
 
 **Backend**
 
-* Se ha realizado la documentacion de la api para los endpoints de Products y Carts.
+* Se han hecho 3 test en la carpeta test
+Se muestran por log de consola todos los resultados.
 
-* "localhost:8080/apidocs": Ruta para acceder a la interfaz grafica de Swagger
+- Test Sessions ("test/sessions.test.js"): Son 4 test. Comprueba que funcionnen correctamente la creacion de un usuario, el logeo, la ruta current que devuelve la sesion y por ultimo el logout. Si se ejecuta por segunda vez se debe borrar del atlas el usuario creado para que no falle el primer test.
+
+- Test Products ("test/products.test.js):  Son 7 test. Primero logea con un el admin, Pide todos los productos modificando el limit de la paginacion, luego 1 por id, crea un producto, lo modifica y por ultimo lo borra.
+
+- Test Carts ("test/carts.test.js"): Son 7 test. Primero  logea con un usuario normal, Modifica el carrito con un array nuevo, modifica la cantidad de 1, borra todos y por ultimo agrega el mismo 2 veces y termina la compra devolviendo el ticket.
 
 **Frontend**
 
@@ -39,8 +44,8 @@ Sin cambios en este desafío
 
 **Usuario para testear**
 - rol "Usuario":
-email: damian@gmail.com
-password: damian1234
+email: test@user.com
+password: testuser
 
 - rol "Admin":
 Email y password en las variables de entorno.

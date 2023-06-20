@@ -46,7 +46,7 @@ describe("Testing de las rutas de carts", () => {
 
     //Obtiene el carrito con el array de productos vacío
     it("Ruta: api/carts con el metodo GET", async function () {
-        
+
         const { _body } = await requester
             .get('/api/carts')
             .set('Cookie', [`${token.name}=${token.value}`])
@@ -62,7 +62,7 @@ describe("Testing de las rutas de carts", () => {
 
     //Actualiza los productos del carrito con un array
     it("Ruta: api/carts con el metodo PUT", async function () {
-        
+
         const products = [
             {
                 productId: "6484ef9c0ef3f7cd1fec80af",
@@ -100,7 +100,7 @@ describe("Testing de las rutas de carts", () => {
     //Actualiza la cantidad de un producto
     it("Ruta: api/carts/product/pid con el metodo PUT", async function () {
         const pid = "6484ef9c0ef3f7cd1fec80ab"
-        const newQuantity = {quantity: "5"}
+        const newQuantity = { quantity: "5" }
 
         const { _body } = await requester
             .put(`/api/carts/product/${pid}`)
@@ -132,10 +132,41 @@ describe("Testing de las rutas de carts", () => {
         console.log("Cart:", JSON.stringify(_body.payload, null, 2))
     })
 
-    //Ingresa un producto al carrito por el Id 2 veces y un segundo producto
+    //Ingresa un producto al carrito por el Id 2
+    it("Ruta: api/carts/product/pid con el metodo POST", async function () {
 
-    //Borra ese segundo producto por el Id
+        const pid = "6484ef9c0ef3f7cd1fec80ab"
+
+        await requester
+            .post(`/api/carts/product/${pid}`)
+            .set('Cookie', [`${token.name}=${token.value}`])
+
+        const { _body } = await requester
+            .post(`/api/carts/product/${pid}`)
+            .set('Cookie', [`${token.name}=${token.value}`])
+
+        //Comprueba que el status es 200
+        expect(_body.status).to.equal("success");
+
+        console.log("Agregar el mismo producto 2 veces")
+        console.log(`Status: ${_body.status}`)
+        console.log(`Message: ${_body.message}`)
+        console.log("Cart:", JSON.stringify(_body.payload, null, 2))
+    })
 
     //Finaliza la compra creando y mostrando el Ticket
+    it("Ruta: api/carts/purshase con el metodo POST", async function () {
 
+        const { _body } = await requester
+            .post(`/api/carts/purchase`)
+            .set('Cookie', [`${token.name}=${token.value}`])
+
+        //Comprueba que el status es 200
+        expect(_body.status).to.equal("success");
+
+        console.log("Termina la compra y devuelve el ticket")
+        console.log(`Status: ${_body.status}`)
+        console.log(`Message: ${_body.message}`)
+        console.log("Ticket:", JSON.stringify(_body.payload, null, 2))
+    })
 })
